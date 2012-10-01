@@ -1,0 +1,21 @@
+{
+    "name": "beanbag",
+    "version": "0.0.1",
+    "description": "Generic CouchDB driver built upon request",
+    "main": "lib/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "engines": {
+        "node": "*"
+    },
+    "dependencies": {
+        "httperrors": "=0.2.0",
+        "passerror": "=0.0.1",
+        "request": "=2.11.4",
+        "underscore": "=1.4.0"
+    },
+    "publishConfig": {
+        "registry": "http://npm.one.com/"
+    }
+}
