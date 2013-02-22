@@ -2,7 +2,7 @@
     "name": "beanbag",
     "version": "0.0.1",
     "description": "Generic CouchDB driver built upon request",
-    "main": "lib/index.js",
+    "main": "lib/BeanBag.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
