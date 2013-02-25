@@ -1,6 +1,6 @@
 {
     "name": "beanbag",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Generic CouchDB driver built upon request",
     "main": "lib/BeanBag.js",
     "scripts": {
