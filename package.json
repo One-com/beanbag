@@ -4,10 +4,7 @@
     "description": "Generic CouchDB driver built upon request",
     "main": "lib/BeanBag.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "engines": {
-        "node": "*"
+        "test": "mocha -R spec"
     },
     "dependencies": {
         "lines": "=1.0.1",
@@ -18,5 +15,9 @@
     },
     "publishConfig": {
         "registry": "http://npm.one.com/"
+    },
+    "devDependencies": {
+        "expect.js": "~0.2.0",
+        "mocha": "~1.9.0"
     }
 }
