@@ -8,7 +8,7 @@
     },
     "dependencies": {
         "lines": "=1.0.1",
-        "httperrors": "=0.2.0",
+        "httperrors": "=0.3.0",
         "passerror": "=0.0.1",
         "request": "=2.11.4",
         "underscore": "=1.4.0"
