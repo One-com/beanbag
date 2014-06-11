@@ -1,23 +1,23 @@
 {
-    "name": "beanbag",
-    "version": "0.0.8",
-    "description": "Generic CouchDB driver built upon request",
-    "main": "lib/BeanBag.js",
-    "scripts": {
-        "test": "mocha -R spec"
-    },
-    "dependencies": {
-        "lines": "=1.0.1",
-        "httperrors": "=0.3.0",
-        "passerror": "=0.0.1",
-        "request": "=2.11.4",
-        "underscore": "=1.4.0"
-    },
-    "publishConfig": {
-        "registry": "http://npm.one.com/"
-    },
-    "devDependencies": {
-        "expect.js": "~0.2.0",
-        "mocha": "~1.9.0"
-    }
+  "name": "beanbag",
+  "version": "0.0.9",
+  "description": "Generic CouchDB driver built upon request",
+  "main": "lib/BeanBag.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "dependencies": {
+    "lines": "=1.0.1",
+    "httperrors": "=0.3.0",
+    "passerror": "=0.0.1",
+    "request": "=2.11.4",
+    "underscore": "=1.4.0"
+  },
+  "publishConfig": {
+    "registry": "http://npm.one.com/"
+  },
+  "devDependencies": {
+    "expect.js": "~0.2.0",
+    "mocha": "~1.9.0"
+  }
 }
