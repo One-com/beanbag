@@ -1,6 +1,6 @@
 .PHONY: lint
 lint:
-	@./node_modules/.bin/one-lint-js --backend lib
+	@./node_modules/.bin/one-lint-js --backend lib test
 
 .PHONY: test
 test:

@@ -1,3 +1,4 @@
+/*globals before, describe, it*/
 var BB = require('../lib/BeanBag'),
     expect = require('expect.js');
 
