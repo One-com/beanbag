@@ -4,7 +4,8 @@
   "description": "Generic CouchDB driver built upon request",
   "main": "lib/BeanBag.js",
   "scripts": {
-    "test": "mocha -R spec"
+    "prepublish": "make lint && make test",
+    "test": "make lint && make test"
   },
   "dependencies": {
     "lines": "=1.0.1",
