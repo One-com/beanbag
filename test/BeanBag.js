@@ -14,8 +14,9 @@ describe('BeanBag', function () {
     });
 
     describe('with a url containing placeholders', function () {
-        it('should substitute a placeholder with a value found in the options object passed to request', function (done) {
+        it('should substitute a placeholder with a value found in the options object passed to request (and prefer it over an identically named one passed to the constructor)', function (done) {
             new BeanBag({
+                domainName: 'the.wrong.one',
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest({
                     request: {
@@ -26,6 +27,44 @@ describe('BeanBag', function () {
                 domainName: 'centersurf.net',
                 path: 'hey'
             }, done);
+        });
+
+        it('should substitute a placeholder with a value found in the options object passed to the constructor', function (done) {
+            new BeanBag({
+                domainName: 'centersurf.net',
+                url: 'http://{domainName}.contacts/foo/',
+                requestLibrary: new MockRequest({
+                    request: {
+                        url: 'http://centersurf.net.contacts/foo/hey'
+                    }
+                })
+            }).request({path: 'hey'}, done);
+        });
+
+        it('should substitute a placeholder with a value found in the options object passed to the constructor', function (done) {
+            new BeanBag({
+                domainName: 'centersurf.net',
+                url: 'http://{domainName}.contacts/foo/',
+                requestLibrary: new MockRequest({
+                    request: {
+                        url: 'http://centersurf.net.contacts/foo/hey'
+                    }
+                })
+            }).request({path: 'hey'}, done);
+        });
+
+        it('should substitute a placeholder with the result of calling a function of that name passed to the request method', function (done) {
+            new BeanBag({
+                domainName: function (requestOptions, placeholderName) {
+                    return requestOptions.owner.replace(/^.*@/, '');
+                },
+                url: 'http://{domainName}.contacts/foo/',
+                requestLibrary: new MockRequest({
+                    request: {
+                        url: 'http://centersurf.net.contacts/foo/hey'
+                    }
+                })
+            }).request({path: 'hey', owner: 'andreas@centersurf.net'}, done);
         });
     });
 });
