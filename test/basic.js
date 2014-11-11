@@ -1,24 +1,23 @@
 /*globals before, describe, it*/
-var BB = require('../lib/BeanBag'),
-    expect = require('expect.js');
+var BeanBag = require('../lib/BeanBag'),
+    expect = require('unexpected');
 
-describe('BeanBag({url: ..., illegalProperty: 1})', function () {
-    var bag;
-    before(function () {
-        bag = new BB({
-            url: 'http://localhost',
-            illegalProperty: 1
+describe('BeanBag', function () {
+    describe('with an unsupported property passed to the constructor', function () {
+        var beanBag;
+        before(function () {
+            beanBag = new BeanBag({
+                url: 'http://localhost',
+                illegalProperty: 1
+            });
+        });
+
+        it('Should be a BeanBag instance', function () {
+            expect(beanBag, 'to be a', BeanBag);
+        });
+
+        it('Should not have illegalProperty set', function () {
+            expect(beanBag, 'not to have property', 'illegalProperty');
         });
     });
-
-    it('Shold be a BeanBag instance', function () {
-        expect(bag).to.be.an(BB);
-    });
-
-    it('Should not have illegalProperty set', function () {
-        expect(bag).not.to.have.property('illegalProperty');
-    });
 });
-
-
-

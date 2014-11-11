@@ -8,8 +8,9 @@
     "test": "make lint && make test"
   },
   "dependencies": {
-    "lines": "1.0.1",
     "httperrors": "0.3.0",
+    "lines": "1.0.1",
+    "mockrequest": "1.1.2",
     "passerror": "0.0.1",
     "request": "2.11.4",
     "underscore": "1.4.0"
@@ -18,8 +19,8 @@
     "registry": "http://npm.one.com/"
   },
   "devDependencies": {
-    "expect.js": "0.3.0",
     "mocha": "2.0.1",
-    "one-lint": "2.1.1"
+    "one-lint": "2.1.1",
+    "unexpected": "5.0.0-beta15"
   }
 }
