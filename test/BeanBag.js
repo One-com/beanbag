@@ -20,22 +20,22 @@ describe('BeanBag', function () {
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest({
                     request: {
-                        url: 'http://centersurf.net.contacts/foo/hey'
+                        url: 'http://example.com.contacts/foo/hey'
                     }
                 })
             }).request({
-                domainName: 'centersurf.net',
+                domainName: 'example.com',
                 path: 'hey'
             }, done);
         });
 
         it('should substitute a placeholder with a value found in the options object passed to the constructor', function (done) {
             new BeanBag({
-                domainName: 'centersurf.net',
+                domainName: 'example.com',
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest({
                     request: {
-                        url: 'http://centersurf.net.contacts/foo/hey'
+                        url: 'http://example.com.contacts/foo/hey'
                     }
                 })
             }).request({path: 'hey'}, done);
@@ -49,10 +49,10 @@ describe('BeanBag', function () {
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest({
                     request: {
-                        url: 'http://centersurf.net.contacts/foo/hey'
+                        url: 'http://example.com.contacts/foo/hey'
                     }
                 })
-            }).request({path: 'hey', owner: 'andreas@centersurf.net'}, done);
+            }).request({path: 'hey', owner: 'andreas@example.com'}, done);
         });
 
         it('should substitute a placeholder with a value found in the options object passed to queryDesignDocument', function (done) {
@@ -69,12 +69,12 @@ describe('BeanBag', function () {
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest({
                     request: {
-                        url: 'http://centersurf.net.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
+                        url: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     }
                 })
             }).queryDesignDocument({
                 viewName: 'foo',
-                domainName: 'centersurf.net',
+                domainName: 'example.com',
                 path: 'hey'
             }, done);
         });
@@ -93,18 +93,18 @@ describe('BeanBag', function () {
                 url: 'http://{domainName}.contacts/foo/',
                 requestLibrary: new MockRequest([
                     {
-                        request: 'http://centersurf.net.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo',
+                        request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo',
                         response: 404
                     },
                     {
-                        request: 'PUT http://centersurf.net.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461',
+                        request: 'PUT http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461',
                         response: 200
                     },
                     {
-                        request: 'http://centersurf.net.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
+                        request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     },
                     {
-                        request: 'http://centersurf.net.contacts/foo/_all_docs?startkey=%22_design%2F%22&endkey=%22_design%2F~%22',
+                        request: 'http://example.com.contacts/foo/_all_docs?startkey=%22_design%2F%22&endkey=%22_design%2F~%22',
                         response: {
                             body: {
                                 rows: []
@@ -114,7 +114,7 @@ describe('BeanBag', function () {
                 ])
             }).queryDesignDocument({
                 viewName: 'foo',
-                domainName: 'centersurf.net',
+                domainName: 'example.com',
                 path: 'hey'
             }, done);
         });
