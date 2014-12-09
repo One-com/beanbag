@@ -32,8 +32,7 @@ describe('BeanBag', function () {
 
         it('should substitute a complex expression in a placeholder', function (done) {
             var beanBag = new BeanBag({
-                domainName: 'the.wrong.one',
-                url: 'http://couchdb{this.partitionNumber(requestOptions) === 0 ? 3 : 4}.example.com/contacts{partitionNumber}',
+                url: 'http://couchdb{{partitionNumber} === 0 ? 3 : 4}.example.com/contacts{partitionNumber}',
                 partitionPoints: ['info'],
                 requestLibrary: new MockRequest([
                     {
@@ -50,7 +49,7 @@ describe('BeanBag', function () {
             });
 
             beanBag.partitionNumber = function (requestOptions) {
-                var key = requestOptions.domainName.split('.').reverse().join('.')
+                var key = requestOptions.domainName.split('.').reverse().join('.'),
                     databaseNumber = 0;
                 for (var i = 0 ; i < this.partitionPoints.length ; i += 1) {
                     if (key >= this.partitionPoints[i]) {
