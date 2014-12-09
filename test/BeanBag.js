@@ -1,7 +1,8 @@
 /*globals describe, it, emit*/
 var BeanBag = require('../lib/BeanBag'),
     expect = require('unexpected'),
-    MockRequest = require('mockrequest');
+    MockRequest = require('mockrequest'),
+    passError = require('passerror');
 
 describe('BeanBag', function () {
     it('should throw if a property passed to the constructor would conflict with something built-in', function () {
@@ -27,6 +28,49 @@ describe('BeanBag', function () {
                 domainName: 'example.com',
                 path: 'hey'
             }, done);
+        });
+
+        it('should substitute a complex expression in a placeholder', function (done) {
+            var beanBag = new BeanBag({
+                domainName: 'the.wrong.one',
+                url: 'http://couchdb{this.partitionNumber(requestOptions) === 0 ? 3 : 4}.example.com/contacts{partitionNumber}',
+                partitionPoints: ['info'],
+                requestLibrary: new MockRequest([
+                    {
+                        request: {
+                            url: 'http://couchdb3.example.com/contacts0/hey'
+                        }
+                    },
+                    {
+                        request: {
+                            url: 'http://couchdb4.example.com/contacts1/there'
+                        }
+                    }
+                ])
+            });
+
+            beanBag.partitionNumber = function (requestOptions) {
+                var key = requestOptions.domainName.split('.').reverse().join('.')
+                    databaseNumber = 0;
+                for (var i = 0 ; i < this.partitionPoints.length ; i += 1) {
+                    if (key >= this.partitionPoints[i]) {
+                        databaseNumber += 1;
+                    } else {
+                        break;
+                    }
+                }
+                return databaseNumber;
+            };
+
+            beanBag.request({
+                domainName: 'example.com',
+                path: 'hey'
+            }, passError(done, function () {
+                beanBag.request({
+                    domainName: 'example.info',
+                    path: 'there'
+                }, done);
+            }));
         });
 
         it('should substitute a placeholder with a value found in the options object passed to the constructor', function (done) {
