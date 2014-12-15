@@ -16,7 +16,7 @@
     "underscore": "1.4.0"
   },
   "publishConfig": {
-    "registry": "http://npm.one.com/"
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "mocha": "2.0.1",
