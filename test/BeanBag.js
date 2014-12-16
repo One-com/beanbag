@@ -72,6 +72,25 @@ describe('BeanBag', function () {
             }));
         });
 
+        it('should support passing a falsy value in request options', function (done) {
+            var beanBag = new BeanBag({
+                url: 'http://couchdb{{partitionNumber} === 0 ? 3 : 4}.example.com/contacts{partitionNumber}',
+                partitionPoints: ['info'],
+                requestLibrary: new MockRequest([
+                    {
+                        request: {
+                            url: 'http://couchdb3.example.com/contacts0/hey'
+                        }
+                    }
+                ])
+            });
+
+            beanBag.request({
+                partitionNumber: 0,
+                path: 'hey'
+            }, done);
+        });
+
         it('should substitute a placeholder with a value found in the options object passed to the constructor', function (done) {
             new BeanBag({
                 domainName: 'example.com',
