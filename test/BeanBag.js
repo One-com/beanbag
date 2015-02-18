@@ -173,26 +173,27 @@ describe('BeanBag', function () {
                         viewName: 'foo',
                         domainName: 'example.com',
                         path: 'hey'
-                    }, done);
+                    }, cb);
                 }, 'with http mocked out', [
                     {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo',
                         response: 404
                     },
                     {
-                        request: 'PUT http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461',
-                        response: 200
+                        request: {
+                            url: 'PUT http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461',
+                            body: {
+                                views: {
+                                    foo: {
+                                        map: 'function () {\n                                emit(\'foo\');\n                            }'
+                                    }
+                                }
+                            }
+                        },
+                        response: 201
                     },
                     {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
-                    },
-                    {
-                        request: 'http://example.com.contacts/foo/_all_docs?startkey=%22_design%2F%22&endkey=%22_design%2F~%22',
-                        response: {
-                            body: {
-                                rows: []
-                            }
-                        }
                     }
                 ], 'to call the callback with no error', done);
             });
