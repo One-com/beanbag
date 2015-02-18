@@ -1,7 +1,6 @@
 /*globals describe, it, emit*/
 var BeanBag = require('../lib/BeanBag'),
     unexpected = require('unexpected'),
-    MockRequest = require('mockrequest'),
     passError = require('passerror');
 
 describe('BeanBag', function () {
