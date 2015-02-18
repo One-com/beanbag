@@ -13,16 +13,16 @@
     "passerror": "0.0.1",
     "request": "2.11.4",
     "underscore": "1.4.0",
-    "unexpected-mitm": "2.1.1"
+    "unexpected-mitm": "2.3.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "messy": "4.2.0",
+    "messy": "4.3.0",
     "mocha": "2.0.1",
     "unexpected": "5.9.1",
-    "unexpected-messy": "2.10.0",
-    "unexpected-mitm": "2.1.0"
+    "unexpected-messy": "2.11.0",
+    "unexpected-mitm": "2.2.0"
   }
 }
