@@ -1,6 +1,7 @@
 /*globals describe, it, emit*/
 var BeanBag = require('../lib/BeanBag'),
     unexpected = require('unexpected'),
+    pathModule = require('path'),
     passError = require('passerror');
 
 describe('BeanBag', function () {
@@ -200,32 +201,65 @@ describe('BeanBag', function () {
         });
     });
 
-    describe('with a client certificate', function () {
+    describe('with a client certificate and related properties', function () {
         var cert = new Buffer([0]),
             key = new Buffer([1]),
             ca = new Buffer([2]);
 
-        var beanBag = new BeanBag({cert: cert, key: key, ca: ca, url: 'https://example.com:5984/'});
-        it('should expose the cert, key, and ca options on the instance', function () {
-            expect(beanBag, 'to satisfy', {
-                cert: cert,
-                key: key,
-                ca: ca
-            });
-        });
-
-        it('should make connections using the client certificate', function (done) {
-            expect(function (cb) {
-                beanBag.request({path: 'foo'}, cb);
-            }, 'with http mocked out', {
-                request: {
-                    encrypted: true,
-                    url: 'GET /foo',
+        describe('specified as Buffer instances', function () {
+            var beanBag = new BeanBag({cert: cert, key: key, ca: ca, url: 'https://example.com:5984/'});
+            it('should expose the cert, key, and ca options on the instance', function () {
+                expect(beanBag, 'to satisfy', {
                     cert: cert,
                     key: key,
                     ca: ca
-                }
-            }, 'to call the callback with no error', done);
+                });
+            });
+
+            it('should make connections using the client certificate', function (done) {
+                expect(function (cb) {
+                    beanBag.request({path: 'foo'}, cb);
+                }, 'with http mocked out', {
+                    request: {
+                        encrypted: true,
+                        url: 'GET /foo',
+                        cert: cert,
+                        key: key,
+                        ca: ca
+                    }
+                }, 'to call the callback with no error', done);
+            });
+        });
+
+        describe('specified as strings', function () {
+            var beanBag = new BeanBag({
+                cert: pathModule.resolve(__dirname, '..', 'testdata', '0byte'),
+                key: pathModule.resolve(__dirname, '..', 'testdata', '1byte'),
+                ca: pathModule.resolve(__dirname, '..', 'testdata', '2byte'),
+                url: 'https://example.com:5984/'
+            });
+
+            it('should interpret the options as file names and expose the loaded cert, key, and ca options on the instance', function () {
+                expect(beanBag, 'to satisfy', {
+                    cert: cert,
+                    key: key,
+                    ca: ca
+                });
+            });
+
+            it('should make connections using the client certificate', function (done) {
+                expect(function (cb) {
+                    beanBag.request({path: 'foo'}, cb);
+                }, 'with http mocked out', {
+                    request: {
+                        encrypted: true,
+                        url: 'GET /foo',
+                        cert: cert,
+                        key: key,
+                        ca: ca
+                    }
+                }, 'to call the callback with no error', done);
+            });
         });
     });
 });
