@@ -19,13 +19,11 @@ describe('BeanBag', function () {
             });
         });
 
-    it('should throw if a property passed to the constructor would conflict with something built-in', function () {
-        expect(function () {
-            new BeanBag({
-                url: 'http://localhost',
-                request: 1
-            });
-        }, 'to throw', 'Unsupported config option: request (would conflict with built-in property)');
+    it('should not overwrite a built-in method with a config object property', function () {
+        expect(new BeanBag({
+            url: 'http://localhost',
+            request: 1
+        }).request, 'to be a function');
     });
 
     describe('with a url containing placeholders', function () {
