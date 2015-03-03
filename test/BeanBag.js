@@ -9,6 +9,8 @@ describe('BeanBag', function () {
         .installPlugin(require('unexpected-messy'))
         .installPlugin(require('unexpected-mitm'))
         .addAssertion('to call the callback with no error', function (expect, subject, done) {
+            this.args.pop();
+            this.errorMode = 'nested';
             subject(function (err) {
                 try {
                     expect(err, 'to be falsy');
