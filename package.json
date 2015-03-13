@@ -15,8 +15,7 @@
     "lines": "1.0.1",
     "passerror": "0.0.1",
     "request": "2.11.4",
-    "underscore": "1.4.0",
-    "unexpected-mitm": "2.3.0"
+    "underscore": "1.4.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
