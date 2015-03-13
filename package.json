@@ -5,7 +5,10 @@
   "main": "lib/BeanBag.js",
   "author": "Andreas Lind @papandreou <andreas@one.com>",
   "scripts": {
-    "test": "mocha"
+    "lint": "jshint .",
+    "test": "mocha && npm run lint",
+    "travis": "npm test && npm run coverage && <coverage/lcov.info coveralls",
+    "coverage": "NODE_ENV=development istanbul cover _mocha -- --reporter dot && echo google-chrome coverage/lcov-report/index.html"
   },
   "dependencies": {
     "httperrors": "0.3.0",
@@ -19,6 +22,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "coveralls": "2.11.2",
+    "istanbul": "0.3.7",
     "messy": "4.3.0",
     "mocha": "2.0.1",
     "unexpected": "6.3.1",
