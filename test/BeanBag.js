@@ -1,4 +1,4 @@
-/*globals describe, it, emit*/
+/*global describe, it, emit, __dirname*/
 var BeanBag = require('../lib/BeanBag'),
     unexpected = require('unexpected'),
     pathModule = require('path'),
@@ -61,7 +61,7 @@ describe('BeanBag', function () {
                     } else {
                         break;
                     }
-                    }
+                }
                 return databaseNumber;
             };
 
