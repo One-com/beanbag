@@ -21,8 +21,8 @@
   "devDependencies": {
     "messy": "4.3.0",
     "mocha": "2.0.1",
-    "unexpected": "5.10.0",
-    "unexpected-messy": "2.11.0",
-    "unexpected-mitm": "2.3.0"
+    "unexpected": "6.3.1",
+    "unexpected-messy": "2.14.0",
+    "unexpected-mitm": "3.0.0"
   }
 }

@@ -6,7 +6,6 @@ var BeanBag = require('../lib/BeanBag'),
 
 describe('BeanBag', function () {
     var expect = unexpected.clone()
-        .installPlugin(require('unexpected-messy'))
         .installPlugin(require('unexpected-mitm'))
         .addAssertion('to call the callback with no error', function (expect, subject, done) {
             this.args.pop();
