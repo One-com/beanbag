@@ -27,6 +27,44 @@ describe('BeanBag', function () {
         }).request, 'to be a function');
     });
 
+    it('should perform a simple request', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984' }).request({ path: 'bar/quux' }, cb);
+        }, 'with http mocked out', {
+            request: 'GET http://localhost:5984/bar/quux',
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    describe('with a query', function () {
+        it('should allow specifying the query string as a string', function (done) {
+            expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'bar/quux', query: 'blabla' }, cb);
+            }, 'with http mocked out', {
+                request: 'GET http://localhost:5984/bar/quux?blabla',
+                response: 200
+            }, 'to call the callback with no error', done);
+        });
+
+        it('should allow specifying the query string as an object', function (done) {
+            expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'bar/quux', query: {
+                    ascii: 'blabla',
+                    nønascïî: 'nønascïî',
+                    multiple: [ 'foo', 'nønascïî' ],
+                    iAmUndefined: undefined
+                }}, cb);
+            }, 'with http mocked out', {
+                request: 'GET http://localhost:5984/bar/quux' +
+                    '?ascii=%22blabla%22' +
+                    '&n%C3%B8nasc%C3%AF%C3%AE=%22n%C3%B8nasc%C3%AF%C3%AE%22' +
+                    '&multiple=%22foo%22' +
+                    '&multiple=%22n%C3%B8nasc%C3%AF%C3%AE%22',
+                response: 200
+            }, 'to call the callback with no error', done);
+        });
+    });
+
     describe('with a url containing placeholders', function () {
         it('should substitute a placeholder with a value found in the options object passed to request (and prefer it over an identically named one passed to the constructor)', function (done) {
             var beanBag = new BeanBag({
