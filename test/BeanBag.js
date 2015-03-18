@@ -36,6 +36,94 @@ describe('BeanBag', function () {
         }, 'to call the callback with no error', done);
     });
 
+    it('should allow specifying custom headers', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984' }).request({ path: 'bar/quux', headers: { Foo: 'bar' } }, cb);
+        }, 'with http mocked out', {
+            request: {
+                url: 'GET http://localhost:5984/bar/quux',
+                headers: { Foo: 'bar' }
+            },
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should resolve the path from the base url', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/hey/there' }).request({ path: '../quux' }, cb);
+        }, 'with http mocked out', {
+            request: {
+                url: 'GET http://localhost:5984/hey/quux'
+            },
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should allow specifying the request body as a Buffer', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: new Buffer([1, 2, 3]) }, cb);
+        }, 'with http mocked out', {
+            request: {
+                url: 'GET http://localhost:5984/foo',
+                headers: {
+                    'Content-Type': undefined
+                },
+                body: new Buffer([1, 2, 3])
+            },
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should allow specifying the request body as a string', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: 'foobar' }, cb);
+        }, 'with http mocked out', {
+            request: {
+                url: 'GET http://localhost:5984/foo',
+                headers: {
+                    'Content-Type': undefined
+                },
+                body: 'foobar'
+            },
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should allow specifying the request body as an object, implying JSON', function (done) {
+        expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: { what: 'gives' } }, cb);
+        }, 'with http mocked out', {
+            request: {
+                url: 'GET http://localhost:5984/foo',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: { what: 'gives' }
+            },
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should return an object with an abort method', function (done) {
+        expect(function (cb) {
+            expect(new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb), 'to satisfy', {
+                abort: expect.it('to be a function')
+            });
+        }, 'with http mocked out', {
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
+    it('should retry up to ', function (done) {
+        expect(function (cb) {
+            expect(new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb), 'to satisfy', {
+                abort: expect.it('to be a function')
+            });
+        }, 'with http mocked out', {
+            response: 200
+        }, 'to call the callback with no error', done);
+    });
+
     describe('with a query', function () {
         it('should allow specifying the query string as a string', function (done) {
             expect(function (cb) {
