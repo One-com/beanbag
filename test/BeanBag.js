@@ -61,10 +61,10 @@ describe('BeanBag', function () {
 
     it('should allow specifying the request body as a Buffer', function (done) {
         expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: new Buffer([1, 2, 3]) }, cb);
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: new Buffer([1, 2, 3]) }, cb);
         }, 'with http mocked out', {
             request: {
-                url: 'GET http://localhost:5984/foo',
+                url: 'POST http://localhost:5984/foo',
                 headers: {
                     'Content-Type': undefined
                 },
@@ -76,10 +76,10 @@ describe('BeanBag', function () {
 
     it('should allow specifying the request body as a string', function (done) {
         expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: 'foobar' }, cb);
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: 'foobar' }, cb);
         }, 'with http mocked out', {
             request: {
-                url: 'GET http://localhost:5984/foo',
+                url: 'POST http://localhost:5984/foo',
                 headers: {
                     'Content-Type': undefined
                 },
@@ -91,10 +91,10 @@ describe('BeanBag', function () {
 
     it('should allow specifying the request body as an object, implying JSON', function (done) {
         expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', body: { what: 'gives' } }, cb);
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: { what: 'gives' } }, cb);
         }, 'with http mocked out', {
             request: {
-                url: 'GET http://localhost:5984/foo',
+                url: 'POST http://localhost:5984/foo',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -106,7 +106,7 @@ describe('BeanBag', function () {
 
     it('should return an object with an abort method', function (done) {
         expect(function (cb) {
-            expect(new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb), 'to satisfy', {
+            expect(new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo' }, cb), 'to satisfy', {
                 abort: expect.it('to be a function')
             });
         }, 'with http mocked out', {
@@ -114,14 +114,13 @@ describe('BeanBag', function () {
         }, 'to call the callback with no error', done);
     });
 
-    it('should retry up to ', function (done) {
+    it.skip('should retry up to numRetries times', function (done) {
         expect(function (cb) {
-            expect(new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb), 'to satisfy', {
-                abort: expect.it('to be a function')
-            });
-        }, 'with http mocked out', {
-            response: 200
-        }, 'to call the callback with no error', done);
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 1 }, cb);
+        }, 'with http mocked out', [
+            { response: new Error('ETIMEDOUT') },
+            { response: 200 }
+        ], 'to call the callback with no error', done);
     });
 
     describe('with a query', function () {
