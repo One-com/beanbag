@@ -4,6 +4,7 @@
   "description": "Generic CouchDB driver built upon request",
   "main": "lib/BeanBag.js",
   "author": "Andreas Lind @papandreou <andreas@one.com>",
+  "repository": "git://github.com/One-com/beanbag",
   "scripts": {
     "lint": "jshint .",
     "test": "mocha && npm run lint",
