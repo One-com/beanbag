@@ -326,17 +326,18 @@ describe('BeanBag', function () {
     });
 
     describe('with a client certificate and related properties', function () {
-        var cert = new Buffer([0]),
-            key = new Buffer([1]),
-            ca = new Buffer([2]);
+        var zero = new Buffer([0]),
+            one = new Buffer([1]),
+            two = new Buffer([2]),
+            three = new Buffer([3]);
 
         describe('specified as Buffer instances', function () {
-            var beanBag = new BeanBag({cert: cert, key: key, ca: ca, url: 'https://example.com:5984/'});
+            var beanBag = new BeanBag({cert: zero, key: one, ca: two, url: 'https://example.com:5984/'});
             it('should expose the cert, key, and ca options on the instance', function () {
                 expect(beanBag, 'to satisfy', {
-                    cert: cert,
-                    key: key,
-                    ca: ca
+                    cert: zero,
+                    key: one,
+                    ca: two
                 });
             });
 
@@ -347,27 +348,30 @@ describe('BeanBag', function () {
                     request: {
                         encrypted: true,
                         url: 'GET /foo',
-                        cert: cert,
-                        key: key,
-                        ca: ca
+                        cert: zero,
+                        key: one,
+                        ca: two
                     }
                 }, 'to call the callback with no error', done);
             });
         });
 
-        describe('specified as strings', function () {
+        describe('specified as strings and arrays', function () {
             var beanBag = new BeanBag({
                 cert: pathModule.resolve(__dirname, '..', 'testdata', '0byte'),
                 key: pathModule.resolve(__dirname, '..', 'testdata', '1byte'),
-                ca: pathModule.resolve(__dirname, '..', 'testdata', '2byte'),
+                ca: [
+                    pathModule.resolve(__dirname, '..', 'testdata', '2byte'),
+                    pathModule.resolve(__dirname, '..', 'testdata', '3byte')
+                ],
                 url: 'https://example.com:5984/'
             });
 
             it('should interpret the options as file names and expose the loaded cert, key, and ca options on the instance', function () {
                 expect(beanBag, 'to satisfy', {
-                    cert: cert,
-                    key: key,
-                    ca: ca
+                    cert: zero,
+                    key: one,
+                    ca: [two, three]
                 });
             });
 
@@ -378,9 +382,9 @@ describe('BeanBag', function () {
                     request: {
                         encrypted: true,
                         url: 'GET /foo',
-                        cert: cert,
-                        key: key,
-                        ca: ca
+                        cert: zero,
+                        key: one,
+                        ca: [two, three]
                     }
                 }, 'to call the callback with no error', done);
             });
