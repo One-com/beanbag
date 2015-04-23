@@ -22,12 +22,12 @@
   },
   "devDependencies": {
     "coveralls": "2.11.2",
-    "istanbul": "0.3.7",
-    "jshint": "2.6.3",
-    "messy": "4.3.0",
-    "mocha": "2.0.1",
-    "unexpected": "6.3.1",
-    "unexpected-messy": "2.14.0",
-    "unexpected-mitm": "3.0.0"
+    "istanbul": "0.3.13",
+    "jshint": "2.7.0",
+    "messy": "6.1.0",
+    "mocha": "2.2.4",
+    "unexpected": "7.0.1",
+    "unexpected-messy": "3.0.3",
+    "unexpected-mitm": "5.0.3"
   }
 }
