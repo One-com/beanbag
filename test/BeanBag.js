@@ -1,8 +1,7 @@
 /*global describe, it, emit, __dirname*/
 var BeanBag = require('../lib/BeanBag'),
     unexpected = require('unexpected'),
-    pathModule = require('path'),
-    passError = require('passerror');
+    pathModule = require('path');
 
 describe('BeanBag', function () {
     var expect = unexpected.clone()
