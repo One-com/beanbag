@@ -26,8 +26,8 @@
     "jshint": "2.7.0",
     "messy": "6.1.0",
     "mocha": "2.2.4",
-    "unexpected": "7.0.1",
+    "unexpected": "7.4.3",
     "unexpected-messy": "3.0.3",
-    "unexpected-mitm": "5.0.3"
+    "unexpected-mitm": "5.4.0"
   }
 }
