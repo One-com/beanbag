@@ -15,6 +15,7 @@
     "httperrors": "0.3.0",
     "lines": "1.0.1",
     "passerror": "0.0.1",
+    "socketerrors": "0.0.1",
     "underscore": "1.4.0"
   },
   "publishConfig": {
