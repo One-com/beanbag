@@ -1,5 +1,7 @@
 /*global describe, it, emit, __dirname*/
 var BeanBag = require('../lib/BeanBag'),
+    httpErrors = require('httperrors'),
+    socketErrors = require('socketerrors'),
     unexpected = require('unexpected'),
     pathModule = require('path');
 
@@ -13,6 +15,14 @@ describe('BeanBag', function () {
                     if (err) {
                         throw err;
                     }
+                }));
+            });
+        })
+        .addAssertion('to call the callback with error', function (expect, subject, expectedError) {
+            this.errorMode = 'nested';
+            return expect.promise(function (run) {
+                subject(run(function (err) {
+                    expect(err, 'to equal', expectedError);
                 }));
             });
         });
@@ -118,6 +128,27 @@ describe('BeanBag', function () {
             { response: new Error('ETIMEDOUT') },
             { response: 200 }
         ], 'to call the callback with no error');
+    });
+
+    it('should handle ECONNREFUSED', function () {
+        var error = new Error('connect ECONNREFUSED');
+        error.code = 'ECONNREFUSED';
+
+        return expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb);
+        }, 'with http mocked out', {
+            response: error
+        }, 'to call the callback with error', socketErrors(error));
+    });
+
+    it('should handle unknown errors', function () {
+        var error = new Error('something else');
+
+        return expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb);
+        }, 'with http mocked out', {
+            response: error
+        }, 'to call the callback with error', new httpErrors[500](error.message));
     });
 
     describe('with a query', function () {
