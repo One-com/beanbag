@@ -131,14 +131,11 @@ describe('BeanBag', function () {
     });
 
     it('should handle ECONNREFUSED', function () {
-        var error = new Error('connect ECONNREFUSED');
-        error.code = 'ECONNREFUSED';
-
         return expect(function (cb) {
             new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo' }, cb);
         }, 'with http mocked out', {
-            response: error
-        }, 'to call the callback with error', socketErrors(error));
+            response: new socketErrors.ECONNREFUSED('connect ECONNREFUSED')
+        }, 'to call the callback with error', new socketErrors.ECONNREFUSED('connect ECONNREFUSED'));
     });
 
     it('should handle unknown errors', function () {
