@@ -133,7 +133,7 @@ describe('BeanBag', function () {
             ], 'to call the callback with no error');
         });
 
-        it('should give up if the request fails 1 + `numRetries`', function () {
+        it('should give up if the request fails 1 + `numRetries` times', function () {
             return expect(function (cb) {
                 new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 2 }, cb);
             }, 'with http mocked out', [
@@ -147,9 +147,9 @@ describe('BeanBag', function () {
             return expect(function (cb) {
                 new BeanBag({ url: 'http://localhost:5984/' })
                     .request({ method: 'POST', body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', '0byte')), path: 'foo', numRetries: 2 }, cb);
-            }, 'with http mocked out', [
-                { response: new socketErrors.ETIMEDOUT() }
-            ], 'to call the callback with error', new socketErrors.ETIMEDOUT());
+            }, 'with http mocked out', {
+                response: new socketErrors.ETIMEDOUT()
+            }, 'to call the callback with error', new socketErrors.ETIMEDOUT());
         });
     });
 
@@ -213,9 +213,7 @@ describe('BeanBag', function () {
                     path: 'hey'
                 }, cb);
             }, 'with http mocked out', {
-                request: {
-                    url: 'http://example.com.contacts/foo/hey'
-                }
+                request: 'http://example.com.contacts/foo/hey'
             }, 'to call the callback with no error');
         });
 
@@ -252,16 +250,8 @@ describe('BeanBag', function () {
                     }, cb);
                 });
             }, 'with http mocked out', [
-                {
-                    request: {
-                        url: 'http://couchdb3.example.com/contacts0/hey'
-                    }
-                },
-                {
-                    request: {
-                        url: 'http://couchdb4.example.com/contacts1/there'
-                    }
-                }
+                { request: 'http://couchdb3.example.com/contacts0/hey' },
+                { request: 'http://couchdb4.example.com/contacts1/there' }
             ], 'to call the callback with no error');
         });
 
@@ -275,13 +265,9 @@ describe('BeanBag', function () {
                     partitionNumber: 0,
                     path: 'hey'
                 }, cb);
-            }, 'with http mocked out', [
-                {
-                    request: {
-                        url: 'http://couchdb3.example.com/contacts0/hey'
-                    }
-                }
-            ], 'to call the callback with no error');
+            }, 'with http mocked out', {
+                request: 'http://couchdb3.example.com/contacts0/hey'
+            }, 'to call the callback with no error');
         });
 
         it('should substitute a placeholder with a value found in the options object passed to the constructor', function () {
@@ -293,9 +279,7 @@ describe('BeanBag', function () {
             return expect(function (cb) {
                 beanBag.request({path: 'hey'}, cb);
             }, 'with http mocked out', {
-                request: {
-                    url: 'http://example.com.contacts/foo/hey'
-                }
+                request: 'http://example.com.contacts/foo/hey'
             }, 'to call the callback with no error');
         });
 
@@ -310,9 +294,7 @@ describe('BeanBag', function () {
             return expect(function (cb) {
                 beanBag.request({path: 'hey', owner: 'andreas@example.com'}, cb);
             }, 'with http mocked out', {
-                request: {
-                    url: 'http://example.com.contacts/foo/hey'
-                }
+                request: 'http://example.com.contacts/foo/hey'
             }, 'to call the callback with no error');
         });
 
@@ -338,9 +320,7 @@ describe('BeanBag', function () {
                         path: 'hey'
                     }, cb);
                 }, 'with http mocked out', {
-                    request: {
-                        url: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
-                    }
+                    request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                 }, 'to call the callback with no error');
             });
 
