@@ -3,6 +3,7 @@ var BeanBag = require('../lib/BeanBag'),
     httpErrors = require('httperrors'),
     socketErrors = require('socketerrors'),
     unexpected = require('unexpected'),
+    fs = require('fs'),
     pathModule = require('path');
 
 describe('BeanBag', function () {
@@ -121,13 +122,35 @@ describe('BeanBag', function () {
         }, 'to call the callback with no error');
     });
 
-    it.skip('should retry up to numRetries times', function () {
-        return expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 1 }, cb);
-        }, 'with http mocked out', [
-            { response: new Error('ETIMEDOUT') },
-            { response: 200 }
-        ], 'to call the callback with no error');
+    describe('retrying on failure', function () {
+        it('should return a successful response when a failed GET is retried `numRetries` times', function () {
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 2 }, cb);
+            }, 'with http mocked out', [
+                { response: new socketErrors.ETIMEDOUT() },
+                { response: new socketErrors.ETIMEDOUT() },
+                { response: 200 }
+            ], 'to call the callback with no error');
+        });
+
+        it('should give up if the request fails 1 + `numRetries`', function () {
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 2 }, cb);
+            }, 'with http mocked out', [
+                { response: new socketErrors.ETIMEDOUT() },
+                { response: new socketErrors.ETIMEDOUT() },
+                { response: new socketErrors.ETIMEDOUT() }
+            ], 'to call the callback with error', new socketErrors.ETIMEDOUT());
+        });
+
+        it('should not attempt to retry a request with the body given as a stream, despite a `numRetries` setting', function () {
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' })
+                    .request({ method: 'POST', body: fs.createReadStream(pathModule.resolve(__dirname, '..', 'testdata', '0byte')), path: 'foo', numRetries: 2 }, cb);
+            }, 'with http mocked out', [
+                { response: new socketErrors.ETIMEDOUT() }
+            ], 'to call the callback with error', new socketErrors.ETIMEDOUT());
+        });
     });
 
     it('should handle ECONNREFUSED', function () {
