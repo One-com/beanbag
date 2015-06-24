@@ -9,29 +9,7 @@ var BeanBag = require('../lib/BeanBag'),
 
 describe('BeanBag', function () {
     var expect = unexpected.clone()
-        .installPlugin(require('unexpected-mitm'))
-        .addAssertion('to call the callback with no error', function (expect, subject, assertFn) {
-            this.errorMode = 'nested';
-            return expect.promise(function (run) {
-                subject(run(function (err, response, body) {
-                    if (err) {
-                        throw err;
-                    }
-
-                    if (assertFn) {
-                        assertFn(response, body);
-                    }
-                }));
-            });
-        })
-        .addAssertion('to call the callback with error', function (expect, subject, expectedError) {
-            this.errorMode = 'nested';
-            return expect.promise(function (run) {
-                subject(run(function (err) {
-                    expect(err, 'to equal', expectedError);
-                }));
-            });
-        });
+        .installPlugin(require('unexpected-mitm'));
 
     it('should not overwrite a built-in method with a config object property', function () {
         expect(new BeanBag({
@@ -46,7 +24,7 @@ describe('BeanBag', function () {
         }, 'with http mocked out', {
             request: 'GET http://localhost:5984/bar/quux',
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should allow specifying custom headers', function () {
@@ -58,7 +36,7 @@ describe('BeanBag', function () {
                 headers: { Foo: 'bar' }
             },
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should resolve the path from the base url', function () {
@@ -69,7 +47,7 @@ describe('BeanBag', function () {
                 url: 'GET http://localhost:5984/hey/quux'
             },
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should allow specifying the request body as a Buffer', function () {
@@ -84,7 +62,7 @@ describe('BeanBag', function () {
                 body: new Buffer([1, 2, 3])
             },
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should allow specifying the request body as a string', function () {
@@ -99,7 +77,7 @@ describe('BeanBag', function () {
                 body: new Buffer('foobar', 'utf-8')
             },
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should allow specifying the request body as an object, implying JSON', function () {
@@ -114,7 +92,7 @@ describe('BeanBag', function () {
                 body: { what: 'gives' }
             },
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     it('should return an object with an abort method', function () {
@@ -124,7 +102,7 @@ describe('BeanBag', function () {
             });
         }, 'with http mocked out', {
             response: 200
-        }, 'to call the callback with no error');
+        }, 'to call the callback without error');
     });
 
     describe('retrying on failure', function () {
@@ -135,7 +113,7 @@ describe('BeanBag', function () {
                 { response: new socketErrors.ETIMEDOUT() },
                 { response: new socketErrors.ETIMEDOUT() },
                 { response: 200 }
-            ], 'to call the callback with no error');
+            ], 'to call the callback without error');
         });
 
         it('should give up if the request fails 1 + `numRetries` times', function () {
@@ -197,7 +175,7 @@ describe('BeanBag', function () {
                     },
                     body: responseStream
                 }
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         it('should allow any valid formulation of application/json', function () {
@@ -223,8 +201,8 @@ describe('BeanBag', function () {
                     },
                     body: responseStream
                 }
-            }, 'to call the callback with no error', function (response, body) {
-                expect(body, 'to equal', responseObject);
+            }, 'to call the callback without error').spread(function (response, body) {
+                return expect(body, 'to equal', responseObject);
             });
         });
 
@@ -259,7 +237,7 @@ describe('BeanBag', function () {
             }, 'with http mocked out', {
                 request: 'GET http://localhost:5984/bar/quux?blabla',
                 response: 200
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         it('should allow specifying the query string as an object', function () {
@@ -277,7 +255,7 @@ describe('BeanBag', function () {
                     '&multiple=%22foo%22' +
                     '&multiple=%22n%C3%B8nasc%C3%AF%C3%AE%22',
                 response: 200
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
     });
 
@@ -295,7 +273,7 @@ describe('BeanBag', function () {
                 }, cb);
             }, 'with http mocked out', {
                 request: 'http://example.com.contacts/foo/hey'
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         it('should substitute a complex expression in a placeholder', function () {
@@ -333,7 +311,7 @@ describe('BeanBag', function () {
             }, 'with http mocked out', [
                 { request: 'http://couchdb3.example.com/contacts0/hey' },
                 { request: 'http://couchdb4.example.com/contacts1/there' }
-            ], 'to call the callback with no error');
+            ], 'to call the callback without error');
         });
 
         it('should support passing a falsy value in request options', function () {
@@ -348,7 +326,7 @@ describe('BeanBag', function () {
                 }, cb);
             }, 'with http mocked out', {
                 request: 'http://couchdb3.example.com/contacts0/hey'
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         it('should substitute a placeholder with a value found in the options object passed to the constructor', function () {
@@ -361,7 +339,7 @@ describe('BeanBag', function () {
                 beanBag.request({path: 'hey'}, cb);
             }, 'with http mocked out', {
                 request: 'http://example.com.contacts/foo/hey'
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         it('should substitute a placeholder with the result of calling a function of that name passed to the request method', function () {
@@ -376,7 +354,7 @@ describe('BeanBag', function () {
                 beanBag.request({path: 'hey', owner: 'andreas@example.com'}, cb);
             }, 'with http mocked out', {
                 request: 'http://example.com.contacts/foo/hey'
-            }, 'to call the callback with no error');
+            }, 'to call the callback without error');
         });
 
         describe('with a design document', function () {
@@ -402,7 +380,7 @@ describe('BeanBag', function () {
                     }, cb);
                 }, 'with http mocked out', {
                     request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
-                }, 'to call the callback with no error');
+                }, 'to call the callback without error');
             });
 
             it('should substitute a placeholder with a value found in the options object passed to queryDesignDocument when the design document does not exist yet', function () {
@@ -433,7 +411,7 @@ describe('BeanBag', function () {
                     {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     }
-                ], 'to call the callback with no error');
+                ], 'to call the callback without error');
             });
         });
     });
@@ -465,7 +443,7 @@ describe('BeanBag', function () {
                         key: one,
                         ca: two
                     }
-                }, 'to call the callback with no error');
+                }, 'to call the callback without error');
             });
         });
 
@@ -499,7 +477,7 @@ describe('BeanBag', function () {
                         key: one,
                         ca: [two, three]
                     }
-                }, 'to call the callback with no error');
+                }, 'to call the callback without error');
             });
         });
     });
