@@ -10,12 +10,16 @@ var BeanBag = require('../lib/BeanBag'),
 describe('BeanBag', function () {
     var expect = unexpected.clone()
         .installPlugin(require('unexpected-mitm'))
-        .addAssertion('to call the callback with no error', function (expect, subject) {
+        .addAssertion('to call the callback with no error', function (expect, subject, assertFn) {
             this.errorMode = 'nested';
             return expect.promise(function (run) {
-                subject(run(function (err) {
+                subject(run(function (err, response, body) {
                     if (err) {
                         throw err;
+                    }
+
+                    if (assertFn) {
+                        assertFn(response, body);
                     }
                 }));
             });
@@ -194,6 +198,34 @@ describe('BeanBag', function () {
                     body: responseStream
                 }
             }, 'to call the callback with no error');
+        });
+
+        it('should allow any valid formulation of application/json', function () {
+            var responseObject = {
+                foo: 'bar'
+            };
+            var responseStream = new stream.Readable();
+            responseStream._read = function () {
+                responseStream.push(new Buffer(JSON.stringify(responseObject)));
+                responseStream.push(null);
+            };
+
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'GET', path: 'foo' }, cb);
+            }, 'with http mocked out', {
+                request: {
+                    url: 'GET http://localhost:5984/foo'
+                },
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf8'
+                    },
+                    body: responseStream
+                }
+            }, 'to call the callback with no error', function (response, body) {
+                expect(body, 'to equal', responseObject);
+            });
         });
 
         it('should throw an error on invalid JSON', function () {
