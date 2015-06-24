@@ -201,8 +201,8 @@ describe('BeanBag', function () {
                     },
                     body: responseStream
                 }
-            }, 'to call the callback with no error', function (response, body) {
-                expect(body, 'to equal', responseObject);
+            }, 'to call the callback without error').spread(function (response, body) {
+                return expect(body, 'to equal', responseObject);
             });
         });
 
