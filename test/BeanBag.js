@@ -1,9 +1,10 @@
-/*global describe, it, emit, __dirname*/
+/*global describe, it, emit, __dirname, JSON*/
 var BeanBag = require('../lib/BeanBag'),
     httpErrors = require('httperrors'),
     socketErrors = require('socketerrors'),
     unexpected = require('unexpected'),
     fs = require('fs'),
+    stream = require('stream'),
     pathModule = require('path');
 
 describe('BeanBag', function () {
@@ -169,6 +170,54 @@ describe('BeanBag', function () {
         }, 'with http mocked out', {
             response: error
         }, 'to call the callback with error', new httpErrors[500](error.message));
+    });
+
+    describe('with a streamed response', function () {
+        it('should handle simple response stream', function () {
+            var responseStream = new stream.Readable();
+            responseStream._read = function () {
+                responseStream.push(new Buffer(JSON.stringify({ a: 1, b: 2 })));
+                responseStream.push(null);
+            };
+
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'GET', path: 'foo' }, cb);
+            }, 'with http mocked out', {
+                request: {
+                    url: 'GET http://localhost:5984/foo'
+                },
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: responseStream
+                }
+            }, 'to call the callback with no error');
+        });
+
+        it('should throw an error on invalid JSON', function () {
+            var responseStream = new stream.Readable();
+            responseStream._read = function () {
+                responseStream.push(new Buffer('{]'));
+                responseStream.push(null);
+            };
+
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'GET', path: 'foo' }, cb);
+            }, 'with http mocked out', {
+                request: {
+                    url: 'GET http://localhost:5984/foo'
+                },
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: responseStream
+                }
+            }, 'to call the callback with error', new httpErrors.BadGateway('Error parsing JSON response body'));
+        });
     });
 
     describe('with a query', function () {
