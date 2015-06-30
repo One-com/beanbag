@@ -1,4 +1,4 @@
-/*global describe, it, emit, __dirname, JSON*/
+/*global describe, it, emit, __dirname, JSON, clearTimeout, setTimeout*/
 var BeanBag = require('../lib/BeanBag'),
     httpErrors = require('httperrors'),
     socketErrors = require('socketerrors'),
@@ -479,6 +479,50 @@ describe('BeanBag', function () {
                     }
                 }, 'to call the callback without error');
             });
+        });
+    });
+
+    describe('with a connection pool', function () {
+        it('should not exhaust the pool on HTTP error status', function () {
+            var server = require('http').createServer(function (req, res) {
+                res.statusCode = 404;
+                res.end();
+            });
+            var timeoutLimit = this.timeout() - 200;
+            server.listen(59891);
+
+            var beanBag = new BeanBag({
+                url: 'http://localhost:59891/',
+                maxSockets: 1
+            });
+
+            function cleanUp() {
+                server.close();
+            }
+
+            function makeRequest() {
+                return expect.promise(function (run) {
+                    var done = run(function () {});
+
+                    beanBag.request({path: 'foo'}, done);
+                });
+            }
+
+            return expect.promise(function (resolve, reject) {
+                var timeout = setTimeout(function () {
+                    reject(new Error('connection pool exhausted'));
+                }, timeoutLimit);
+
+                // make more parallel beanBag requests than we set maxSockets
+                expect.promise.settle([
+                    makeRequest(),
+                    makeRequest(),
+                    makeRequest()
+                ]).then(function () {
+                    clearTimeout(timeout);
+                    resolve();
+                });
+            }).then(cleanUp);
         });
     });
 });
