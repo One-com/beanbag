@@ -25,10 +25,11 @@
     "coveralls": "2.11.2",
     "istanbul": "0.3.13",
     "jshint": "2.7.0",
-    "messy": "6.3.0",
+    "magicpen-media": "1.5.0",
+    "messy": "6.5.0",
     "mocha": "2.2.4",
-    "unexpected": "8.5.0",
-    "unexpected-messy": "4.1.0",
-    "unexpected-mitm": "7.1.0"
+    "unexpected": "9.2.0",
+    "unexpected-messy": "4.6.0",
+    "unexpected-mitm": "7.4.0"
   }
 }
