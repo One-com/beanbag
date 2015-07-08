@@ -524,5 +524,45 @@ describe('BeanBag', function () {
                 });
             }).then(cleanUp);
         });
+
+        it('should not exhaust the pool on HTTP error status #2', function () {
+            var server = require('http').createServer(function (req, res) {
+                res.statusCode = 404;
+                res.end();
+            });
+            var timeoutLimit = this.timeout() - 200;
+            server.listen(59891);
+
+            var beanBag = new BeanBag({
+                url: 'http://localhost:59891/',
+                maxSockets: 1
+            });
+
+            function cleanUp() {
+                server.close();
+            }
+
+            function makeRequest() {
+                return expect.promise(function (run) {
+                    beanBag.request({path: 'foo'}).on('error', run(function () {}));
+                });
+            }
+
+            return expect.promise(function (resolve, reject) {
+                var timeout = setTimeout(function () {
+                    reject(new Error('connection pool exhausted'));
+                }, timeoutLimit);
+
+                // make more parallel beanBag requests than we set maxSockets
+                expect.promise.settle([
+                    makeRequest(),
+                    makeRequest(),
+                    makeRequest()
+                ]).then(function () {
+                    clearTimeout(timeout);
+                    resolve();
+                });
+            }).then(cleanUp);
+        });
     });
 });
