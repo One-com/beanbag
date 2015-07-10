@@ -200,6 +200,47 @@ describe('BeanBag', function () {
                 response: new socketErrors.ETIMEDOUT()
             }, 'to call the callback with error', new socketErrors.ETIMEDOUT());
         });
+
+        describe('with the retry option', function () {
+            describe('with an array of numbers', function () {
+                it('should retry a non-successful request if the HTTP status code is in the array', function () {
+                    return expect(function (cb) {
+                        new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 2, retry: [504] }, cb);
+                    }, 'with http mocked out', [
+                        { response: 504 },
+                        { response: 504 },
+                        { response: 200 }
+                    ], 'to call the callback without error');
+                });
+
+                it('should not retry a non-successful request if the HTTP status code is in the array, but there is a request event listener', function () {
+                    return expect(function (cb) {
+                        new BeanBag({
+                            url: 'http://localhost:5984/',
+                            // The mitm module emits events synchronously, which means that we don't get to add the request listener
+                            // before the mock response has already been received. This hack ensures that the response is delayed
+                            // until the next tick as it will be when we're using the http module. I'd rather do this here than in
+                            // the code itself to avoid waiting an extra tick for all requests:
+                            preprocessRequestOptions: function (requestOptions, options, cb) {
+                                setImmediate(cb);
+                            }
+                        })
+                            .request({ path: 'foo', numRetries: 2, retry: [504] }, cb)
+                            .on('request', function (request) {});
+                    }, 'with http mocked out', [
+                        { response: 504 }
+                    ], 'to call the callback with error', new httpErrors.GatewayTimeout());
+                });
+
+                it('should not retry a non-successful request if the HTTP status code is not in the array', function () {
+                    return expect(function (cb) {
+                        new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'foo', numRetries: 2, retry: [504] }, cb);
+                    }, 'with http mocked out', [
+                        { response: 503 }
+                    ], 'to call the callback with error', new httpErrors.ServiceUnavailable());
+                });
+            });
+        });
     });
 
     it('should handle ECONNREFUSED', function () {
