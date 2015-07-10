@@ -1,4 +1,4 @@
-/*global describe, it, emit*/
+/*global describe, it, emit, setImmediate*/
 var BeanBag = require('../lib/BeanBag'),
     unexpected = require('unexpected'),
     stream = require('stream'),
@@ -135,15 +135,18 @@ describe('BeanBag', function () {
             var metadataSpy = sinon.spy();
             return expect(function (cb) {
                 new BeanBag({ url: 'http://localhost:5984/hey/there' })
-                    .request({ path: '../quux', streamRows: true })
+                    .request({ path: 'quux', streamRows: true })
                     .on('row', function (row) {
                         rows.push(row);
                     })
                     .on('metadata', metadataSpy)
                     .on('error', cb)
-                    .on('end', cb)
+                    .on('end', cb);
             }, 'with http mocked out', {
                 response: {
+                    headers: {
+                        //'Content-Type': 'application/json'
+                    },
                     body: '{"total_rows":2,"offset":0,"rows":[\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId1","key":"uk.co.domain.odd.an@a.weird.email:existingContactId1","value":{"rev":"1-ceb8e8aa27abe5170c3ff1c54491927c"}},\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId2","key":"uk.co.domain.odd.an@a.weird.email:existingContactId2","value":{"rev":"1-0cf4ca6277701a6f42a21491c76f3a71"}}\r\n]}\n'
                 }
             }, 'to call the callback without error').then(function () {
@@ -168,7 +171,7 @@ describe('BeanBag', function () {
             });
         });
 
-        it('should fire an error event once', function () {
+        it('should fire an error event once if the upstream request results in an error', function () {
             var erroringStream = new stream.Readable();
             var rows = [];
             erroringStream._read = function () {
@@ -184,7 +187,7 @@ describe('BeanBag', function () {
                         rows.push(row);
                     })
                     .on('error', cb)
-                    .on('end', cb)
+                    .on('end', cb);
             }, 'with http mocked out', {
                 response: {
                     statusCode: 200,
@@ -194,6 +197,28 @@ describe('BeanBag', function () {
                     body: erroringStream
                 }
             }, 'to call the callback with error', new BeanBag.httpErrors.InternalServerError('Fake error')).then(function () {
+                expect(rows, 'to equal', []);
+            });
+        });
+
+        it('should fire an error event once if the JSON cannot be parsed', function () {
+            var rows = [];
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/hey/there' })
+                    .request({ path: '../quux', streamRows: true })
+                    .on('row', function (row) {
+                        rows.push(row);
+                    })
+                    .on('error', cb)
+                    .on('end', cb);
+            }, 'with http mocked out', {
+                response: {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: 'CQEWCQWEC\r\n'
+                }
+            }, 'to call the callback with error', new BeanBag.httpErrors.InternalServerError('Could not parse line: CQEWCQWEC')).then(function () {
                 expect(rows, 'to equal', []);
             });
         });
