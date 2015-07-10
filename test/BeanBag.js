@@ -106,6 +106,22 @@ describe('BeanBag', function () {
                         response: 201
                     },
                     {
+                        request: '/foo/_all_docs?startkey=%22_design%2F%22&endkey=%22_design%2F~%22',
+                        response: {
+                            body: {
+                                total_rows: 22341,
+                                offset: 0,
+                                rows: [
+                                    {"id":"_design/0cf4ca6277701a6f42a21491c76f3a71","key":"_design/0cf4ca6277701a6f42a21491c76f3a71","value":{"rev":"2-aaac14323f34540b8084899b55be9b8a"}},
+                                    {"id":"_design/c5f85a319e5af7e66e88b89782890461","key":"_design/c5f85a319e5af7e66e88b89782890461","value":{"rev":"1-c3ac14323f34540b8084899b55be9b8a"}}
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        request: 'DELETE /foo/_design/0cf4ca6277701a6f42a21491c76f3a71?rev=2-aaac14323f34540b8084899b55be9b8a'
+                    },
+                    {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     }
                 ], 'to call the callback without error');
