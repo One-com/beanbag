@@ -1,6 +1,6 @@
 {
   "name": "beanbag",
-  "version": "3.4.0",
+  "version": "4.0.0",
   "description": "Generic CouchDB driver built upon the teepee module",
   "main": "lib/BeanBag.js",
   "author": "Andreas Lind @papandreou <andreas@one.com>",
