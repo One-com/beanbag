@@ -70,6 +70,20 @@ describe('BeanBag', function () {
         });
     });
 
+    it('should pass other config options to the agent', function () {
+        var Agent = sinon.spy(http.Agent);
+
+        var beanbag = new BeanBag({
+            url: 'http://localhost:5984/hey/',
+            foobarquux: 123,
+            Agent: Agent
+        });
+
+        expect(beanbag.getAgent(), 'to be an', http.Agent);
+
+        expect(Agent, 'was called with', { foobarquux: 123 });
+    });
+
     it('should perform a simple request', function () {
         return expect(function (cb) {
             new BeanBag({ url: 'http://localhost:5984' }).request({ path: 'bar/quux' }, cb);
