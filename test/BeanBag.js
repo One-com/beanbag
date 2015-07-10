@@ -3,19 +3,46 @@ var BeanBag = require('../lib/BeanBag'),
     httpErrors = require('httperrors'),
     socketErrors = require('socketerrors'),
     unexpected = require('unexpected'),
+    sinon = require('sinon'),
     fs = require('fs'),
+    http = require('http'),
     stream = require('stream'),
     pathModule = require('path');
 
 describe('BeanBag', function () {
     var expect = unexpected.clone()
-        .installPlugin(require('unexpected-mitm'));
+        .installPlugin(require('unexpected-mitm'))
+        .installPlugin(require('unexpected-sinon'));
 
     it('should not overwrite a built-in method with a config object property', function () {
         expect(new BeanBag({
             url: 'http://localhost',
             request: 1
         }).request, 'to be a function');
+    });
+
+    it('should accept a custom agent', function () {
+        var agent;
+        return expect(function (cb) {
+            agent = new http.Agent();
+
+            var beanbag = new BeanBag({
+                url: 'http://localhost:5984/hey/',
+                agent: agent
+            });
+
+            expect(beanbag.agent, 'to be', agent);
+
+            sinon.spy(agent, 'addRequest');
+
+            beanbag.request({ path: 'quux' }, cb);
+        }, 'with http mocked out', {
+            request: 'http://localhost:5984/hey/quux',
+            response: 200
+        },
+        'to call the callback').then(function () {
+            expect(agent.addRequest, 'was called once');
+        });
     });
 
     it('should perform a simple request', function () {
