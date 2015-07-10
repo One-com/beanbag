@@ -4,6 +4,7 @@ var BeanBag = require('../lib/BeanBag'),
     socketErrors = require('socketerrors'),
     unexpected = require('unexpected'),
     sinon = require('sinon'),
+    util = require('util'),
     fs = require('fs'),
     http = require('http'),
     stream = require('stream'),
@@ -42,6 +43,30 @@ describe('BeanBag', function () {
         },
         'to call the callback').then(function () {
             expect(agent.addRequest, 'was called once');
+        });
+    });
+
+    it('should accept a custom agent constructor', function () {
+        var Agent = function (options) {
+            http.Agent.call(this, options);
+            sinon.spy(this, 'addRequest');
+        };
+        util.inherits(Agent, http.Agent);
+        var beanbag;
+        return expect(function (cb) {
+            beanbag = new BeanBag({
+                url: 'http://localhost:5984/hey/',
+                Agent: Agent
+            });
+
+            beanbag.request({ path: 'quux' }, cb);
+        }, 'with http mocked out', {
+            request: 'http://localhost:5984/hey/quux',
+            response: 200
+        },
+        'to call the callback').then(function () {
+            expect(beanbag.agent, 'to be an', Agent);
+            expect(beanbag.agent.addRequest, 'was called once');
         });
     });
 
