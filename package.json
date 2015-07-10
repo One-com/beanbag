@@ -12,7 +12,9 @@
     "coverage": "NODE_ENV=development istanbul cover _mocha --report text --report lcov -- --reporter dot && echo google-chrome coverage/lcov-report/index.html"
   },
   "dependencies": {
+    "byline": "4.2.1",
     "passerror": "0.0.1",
+    "teepee": "1.1.2",
     "underscore": "1.4.0"
   },
   "publishConfig": {
@@ -25,9 +27,11 @@
     "magicpen-media": "1.5.0",
     "messy": "6.5.0",
     "mocha": "2.2.5",
-    "teepee": "1.0.0",
+    "sinon": "1.15.4",
+    "teepee": "1.1.1",
     "unexpected": "9.2.1",
     "unexpected-messy": "4.6.0",
-    "unexpected-mitm": "7.4.1"
+    "unexpected-mitm": "7.4.1",
+    "unexpected-sinon": "6.4.1"
   }
 }

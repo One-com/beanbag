@@ -1,10 +1,13 @@
 /*global describe, it, emit*/
 var BeanBag = require('../lib/BeanBag'),
-    unexpected = require('unexpected');
+    unexpected = require('unexpected'),
+    stream = require('stream'),
+    sinon = require('sinon');
 
 describe('BeanBag', function () {
     var expect = unexpected.clone()
-        .installPlugin(require('unexpected-mitm'));
+        .installPlugin(require('unexpected-mitm'))
+        .installPlugin(require('unexpected-sinon'));
 
     it('should allow specifying the request body as an object, implying JSON with functions stringified', function () {
         return expect(function (cb) {
@@ -106,6 +109,76 @@ describe('BeanBag', function () {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     }
                 ], 'to call the callback without error');
+            });
+        });
+    });
+
+    describe('with the streamRows option', function () {
+        it('should fire a "metadata" event and a "row" event for each row', function () {
+            var rows = [];
+            var metadataSpy = sinon.spy();
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/hey/there' })
+                    .request({ path: '../quux', streamRows: true })
+                    .on('row', function (row) {
+                        rows.push(row);
+                    })
+                    .on('metadata', metadataSpy)
+                    .on('error', cb)
+                    .on('end', cb)
+            }, 'with http mocked out', {
+                response: {
+                    body: '{"total_rows":2,"offset":0,"rows":[\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId1","key":"uk.co.domain.odd.an@a.weird.email:existingContactId1","value":{"rev":"1-ceb8e8aa27abe5170c3ff1c54491927c"}},\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId2","key":"uk.co.domain.odd.an@a.weird.email:existingContactId2","value":{"rev":"1-0cf4ca6277701a6f42a21491c76f3a71"}}\r\n]}\n'
+                }
+            }, 'to call the callback without error').then(function () {
+                expect(rows, 'to equal', [
+                    {
+                        id: 'uk.co.domain.odd.an@a.weird.email:existingContactId1',
+                        key: 'uk.co.domain.odd.an@a.weird.email:existingContactId1',
+                        value: {
+                            rev: '1-ceb8e8aa27abe5170c3ff1c54491927c'
+                        }
+                    },
+                    {
+                        id: 'uk.co.domain.odd.an@a.weird.email:existingContactId2',
+                        key: 'uk.co.domain.odd.an@a.weird.email:existingContactId2',
+                        value: {
+                            rev: '1-0cf4ca6277701a6f42a21491c76f3a71'
+                        }
+                    }
+                ]);
+                expect(metadataSpy, 'was called once');
+                expect(metadataSpy, 'was always called with exactly', { total_rows: 2, offset: 0 });
+            });
+        });
+
+        it('should fire an error event once', function () {
+            var erroringStream = new stream.Readable();
+            var rows = [];
+            erroringStream._read = function () {
+                setImmediate(function () {
+                    erroringStream.emit('error', new Error('Fake error'));
+                });
+            };
+
+            return expect(function (cb) {
+                new BeanBag({ url: 'http://localhost:5984/hey/there' })
+                    .request({ path: '../quux', streamRows: true })
+                    .on('row', function (row) {
+                        rows.push(row);
+                    })
+                    .on('error', cb)
+                    .on('end', cb)
+            }, 'with http mocked out', {
+                response: {
+                    statusCode: 200,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: erroringStream
+                }
+            }, 'to call the callback with error', new BeanBag.httpErrors.InternalServerError('Fake error')).then(function () {
+                expect(rows, 'to equal', []);
             });
         });
     });
