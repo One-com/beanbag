@@ -145,7 +145,7 @@ describe('BeanBag', function () {
             }, 'with http mocked out', {
                 response: {
                     headers: {
-                        //'Content-Type': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: '{"total_rows":2,"offset":0,"rows":[\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId1","key":"uk.co.domain.odd.an@a.weird.email:existingContactId1","value":{"rev":"1-ceb8e8aa27abe5170c3ff1c54491927c"}},\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId2","key":"uk.co.domain.odd.an@a.weird.email:existingContactId2","value":{"rev":"1-0cf4ca6277701a6f42a21491c76f3a71"}}\r\n]}\n'
                 }
