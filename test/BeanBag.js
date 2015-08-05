@@ -9,6 +9,15 @@ describe('BeanBag', function () {
         .installPlugin(require('unexpected-mitm'))
         .installPlugin(require('unexpected-sinon'));
 
+    it('should specify an Accept header with a value of application/json when making a request', function () {
+        return expect(function (cb) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request(cb);
+        }, 'with http mocked out', {
+            request: { headers: { Accept: 'application/json' } },
+            response: 200
+        }, 'to call the callback without error');
+    });
+
     it('should allow specifying the request body as an object, implying JSON with functions stringified', function () {
         return expect(function (cb) {
             new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: { what: 'gives', foo: function () { return 123; } } }, cb);
