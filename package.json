@@ -4,6 +4,7 @@
   "description": "Generic CouchDB driver built upon the teepee module",
   "main": "lib/BeanBag.js",
   "author": "Andreas Lind @papandreou <andreas@one.com>",
+  "license": "BSD-3-Clause",
   "repository": "git://github.com/One-com/beanbag",
   "scripts": {
     "lint": "jshint .",
