@@ -1,4 +1,4 @@
-/*global describe, it, emit, __dirname, JSON, clearTimeout, setTimeout*/
+/*global describe, it, emit, __dirname, JSON, clearTimeout, setTimeout, setImmediate*/
 var BeanBag = require('../lib/BeanBag'),
     httpErrors = require('httperrors'),
     socketErrors = require('socketerrors'),
