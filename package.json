@@ -16,7 +16,7 @@
     "async": "1.3.0",
     "byline": "4.2.1",
     "passerror": "0.0.1",
-    "teepee": "2.13.0",
+    "teepee": "2.16.0",
     "underscore": "1.4.0"
   },
   "publishConfig": {
