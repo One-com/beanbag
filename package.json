@@ -33,5 +33,6 @@
     "unexpected-messy": "4.6.0",
     "unexpected-mitm": "7.4.0",
     "unexpected-sinon": "6.4.1"
-  }
+  },
+  "tag": "3"
 }
