@@ -28,8 +28,8 @@
     "jshint": "2.7.0",
     "mocha": "2.2.5",
     "sinon": "1.15.4",
-    "unexpected": "9.5.0",
-    "unexpected-mitm": "7.7.0",
-    "unexpected-sinon": "6.4.2"
+    "unexpected": "10.0.1",
+    "unexpected-mitm": "8.0.0",
+    "unexpected-sinon": "8.0.0"
   }
 }
