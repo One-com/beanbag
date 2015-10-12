@@ -10,17 +10,17 @@ describe('BeanBag', function () {
         .installPlugin(require('unexpected-sinon'));
 
     it('should specify an Accept header with a value of application/json when making a request', function () {
-        return expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request(cb);
+        return expect(function (await) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request(await());
         }, 'with http mocked out', {
             request: { headers: { Accept: 'application/json' } },
             response: 200
-        }, 'to call the callback without error');
+        }, 'not to error');
     });
 
     it('should allow specifying the request body as an object, implying JSON with functions stringified', function () {
-        return expect(function (cb) {
-            new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: { what: 'gives', foo: function () { return 123; } } }, cb);
+        return expect(function (await) {
+            new BeanBag({ url: 'http://localhost:5984/' }).request({ method: 'POST', path: 'foo', body: { what: 'gives', foo: function () { return 123; } } }, await());
         }, 'with http mocked out', {
             request: {
                 url: 'POST http://localhost:5984/foo',
@@ -30,27 +30,27 @@ describe('BeanBag', function () {
                 body: { what: 'gives', foo: 'function () { return 123; }' }
             },
             response: 200
-        }, 'to call the callback without error');
+        }, 'not to error');
     });
 
     describe('with a query', function () {
         it('should allow specifying the query string as a string', function () {
-            return expect(function (cb) {
-                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'bar/quux', query: 'blabla' }, cb);
+            return expect(function (await) {
+                new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'bar/quux', query: 'blabla' }, await());
             }, 'with http mocked out', {
                 request: 'GET http://localhost:5984/bar/quux?blabla',
                 response: 200
-            }, 'to call the callback without error');
+            }, 'not to error');
         });
 
         it('should allow specifying the query string as an object, where the values will be JSON.stringified', function () {
-            return expect(function (cb) {
+            return expect(function (await) {
                 new BeanBag({ url: 'http://localhost:5984/' }).request({ path: 'bar/quux', query: {
                     ascii: 'blabla',
                     nønascïî: 'nønascïî',
                     multiple: [ 'foo', 'nønascïî' ],
                     iAmUndefined: undefined
-                }}, cb);
+                }}, await());
             }, 'with http mocked out', {
                 request: 'GET http://localhost:5984/bar/quux' +
                     '?ascii=%22blabla%22' +
@@ -58,7 +58,7 @@ describe('BeanBag', function () {
                     '&multiple=%22foo%22' +
                     '&multiple=%22n%C3%B8nasc%C3%AF%C3%AE%22',
                 response: 200
-            }, 'to call the callback without error');
+            }, 'not to error');
         });
     });
 
@@ -78,24 +78,24 @@ describe('BeanBag', function () {
             });
 
             it('should substitute a placeholder with a value found in the options object passed to queryDesignDocument', function () {
-                return expect(function (cb) {
+                return expect(function (await) {
                     beanBag.queryDesignDocument({
                         viewName: 'foo',
                         domainName: 'example.com',
                         path: 'hey'
-                    }, cb);
+                    }, await());
                 }, 'with http mocked out', {
                     request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
-                }, 'to call the callback without error');
+                }, 'not to error');
             });
 
             it('should substitute a placeholder with a value found in the options object passed to queryDesignDocument when the design document does not exist yet', function () {
-                return expect(function (cb) {
+                return expect(function (await) {
                     beanBag.queryDesignDocument({
                         viewName: 'foo',
                         domainName: 'example.com',
                         path: 'hey'
-                    }, cb);
+                    }, await());
                 }, 'with http mocked out', [
                     {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo',
@@ -133,7 +133,7 @@ describe('BeanBag', function () {
                     {
                         request: 'http://example.com.contacts/foo/_design/c5f85a319e5af7e66e88b89782890461/_view/foo'
                     }
-                ], 'to call the callback without error');
+                ], 'not to error');
             });
         });
     });
@@ -142,15 +142,15 @@ describe('BeanBag', function () {
         it('should fire a "metadata" event and a "row" event for each row', function () {
             var rows = [];
             var metadataSpy = sinon.spy();
-            return expect(function (cb) {
+            return expect(function (await) {
                 new BeanBag({ url: 'http://localhost:5984/hey/there' })
                     .request({ path: 'quux', streamRows: true })
                     .on('row', function (row) {
                         rows.push(row);
                     })
                     .on('metadata', metadataSpy)
-                    .on('error', cb)
-                    .on('end', cb);
+                    .on('error', await.reject)
+                    .on('end', await());
             }, 'with http mocked out', {
                 response: {
                     headers: {
@@ -158,7 +158,7 @@ describe('BeanBag', function () {
                     },
                     body: '{"total_rows":2,"offset":0,"rows":[\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId1","key":"uk.co.domain.odd.an@a.weird.email:existingContactId1","value":{"rev":"1-ceb8e8aa27abe5170c3ff1c54491927c"}},\r\n{"id":"uk.co.domain.odd.an@a.weird.email:existingContactId2","key":"uk.co.domain.odd.an@a.weird.email:existingContactId2","value":{"rev":"1-0cf4ca6277701a6f42a21491c76f3a71"}}\r\n]}\n'
                 }
-            }, 'to call the callback without error').then(function () {
+            }, 'not to error').then(function () {
                 expect(rows, 'to equal', [
                     {
                         id: 'uk.co.domain.odd.an@a.weird.email:existingContactId1',
@@ -189,14 +189,14 @@ describe('BeanBag', function () {
                 });
             };
 
-            return expect(function (cb) {
+            return expect(function (await) {
                 new BeanBag({ url: 'http://localhost:5984/hey/there' })
                     .request({ path: '../quux', streamRows: true })
                     .on('row', function (row) {
                         rows.push(row);
                     })
-                    .on('error', cb)
-                    .on('end', cb);
+                    .on('error', await.reject)
+                    .on('end', await());
             }, 'with http mocked out', {
                 response: {
                     statusCode: 200,
@@ -205,21 +205,21 @@ describe('BeanBag', function () {
                     },
                     body: erroringStream
                 }
-            }, 'to call the callback with error', new BeanBag.httpErrors.InternalServerError('Fake error')).then(function () {
+            }, 'to error with', new BeanBag.httpErrors.InternalServerError('Fake error')).then(function () {
                 expect(rows, 'to equal', []);
             });
         });
 
         it('should fire an error event once if the JSON cannot be parsed', function () {
             var rows = [];
-            return expect(function (cb) {
+            return expect(function (await) {
                 new BeanBag({ url: 'http://localhost:5984/hey/there' })
                     .request({ path: '../quux', streamRows: true })
                     .on('row', function (row) {
                         rows.push(row);
                     })
-                    .on('error', cb)
-                    .on('end', cb);
+                    .on('error', await.reject)
+                    .on('end', await());
             }, 'with http mocked out', {
                 response: {
                     headers: {
@@ -227,7 +227,7 @@ describe('BeanBag', function () {
                     },
                     body: 'CQEWCQWEC\r\n'
                 }
-            }, 'to call the callback with error', new BeanBag.httpErrors.InternalServerError('Could not parse line: CQEWCQWEC')).then(function () {
+            }, 'to error with', new BeanBag.httpErrors.InternalServerError('Could not parse line: CQEWCQWEC')).then(function () {
                 expect(rows, 'to equal', []);
             });
         });
