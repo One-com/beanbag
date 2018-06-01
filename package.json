@@ -19,9 +19,6 @@
     "teepee": "2.29.1",
     "underscore": "1.4.0"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "devDependencies": {
     "coveralls": "^2.11.14",
     "istanbul": "^0.4.5",
