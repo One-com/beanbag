@@ -17,7 +17,7 @@
     "byline": "4.2.1",
     "passerror": "0.0.1",
     "teepee": "3.0.1",
-    "underscore": "1.4.0"
+    "underscore": "^1.13.6"
   },
   "devDependencies": {
     "coveralls": "^2.11.14",
