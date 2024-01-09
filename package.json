@@ -20,10 +20,10 @@
     "underscore": "^1.13.6"
   },
   "devDependencies": {
-    "coveralls": "^2.11.14",
+    "coveralls": "^3.1.1",
     "istanbul": "^0.4.5",
     "jshint": "^2.9.4",
-    "mocha": "^3.1.2",
+    "mocha": "^10.2.0",
     "sinon": "^1.17.6",
     "unexpected": "^10.40.2",
     "unexpected-mitm": "^14.1.0",
